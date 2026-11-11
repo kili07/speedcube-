@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#151A1F">
+<title>Speedcube Timer</title>
+<script>
+/* Theme setzen, bevor das Stylesheet greift, sonst blitzt beim Start kurz das
+   Standard-Theme auf. Eigener, winziger Schlüssel: den kompletten Datensatz
+   hier zu parsen würde den Start bremsen. app.js hält ihn synchron. */
+(function () {
+  try {
+    var t = localStorage.getItem('cube.theme');
+    if (t) document.documentElement.dataset.theme = t;
+  } catch (e) { /* privater Modus o.ä.: dann bleibt es beim Standard */ }
+})();
+</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cube Timer">
+<!-- crossorigin ist Pflicht, sonst lädt der Browser die Schriften doppelt -->
+<link rel="preload" href="fonts/archivo-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chivo-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="grow">
+    <h1 id="viewTitle">Timer</h1>
+    <div class="top-sub" id="topSub"></div>
+  </div>
+  <button class="icon-btn" id="btnNew" aria-label="Zeit eintippen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+  </button>
+  <button class="icon-btn" id="btnSettings" aria-label="Einstellungen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+  </button>
+</header>
+
+<main id="main">
+  <section class="view" id="view-timer"></section>
+  <section class="view hidden" id="view-zeiten"></section>
+  <section class="view hidden" id="view-stats"></section>
+</main>
+
+<!-- Icons: Lucide (ISC-Lizenz, licenses/lucide-ISC.txt) -->
+<nav class="tabbar" id="tabbar">
+  <button data-nav="timer" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span>Timer</span></button>
+  <button data-nav="zeiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></svg><span>Zeiten</span></button>
+  <button data-nav="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg><span>Verlauf</span></button>
+</nav>
+
+<!-- Sheet: trägt alle Formulare und Dialoge -->
+<div class="scrim hidden" id="scrim"></div>
+<div class="sheet hidden" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-grip"></div>
+  <div class="sheet-head">
+    <button class="link" id="sheetCancel">Abbrechen</button>
+    <strong id="sheetTitle"></strong>
+    <button class="link strong" id="sheetSave">Sichern</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+<script src="core.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

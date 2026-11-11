@@ -1,0 +1,345 @@
+/* ═══════════════════════════════════════════════════════════════
+   Speedcube Timer: Stylesheet
+
+   Die Werte stehen in tokens.css. Hier stehen nur Bausteine, und die
+   benutzen ausschließlich Tokens. Wer eine neue Farbe braucht, legt ein
+   Token an und bedient beide Themes.
+
+   Aufbau:
+   1. Basis
+   2. Kopfleiste, untere Leiste
+   3. Karten, Abschnitte, Zeilen
+   4. Knöpfe, Pills, Chips, Segmente, Schalter, Formulare
+   5. Sheet, Toast, Hinweise, leerer Zustand, Eingabe-Karte
+   6. Timer, Zeitenliste, Kennwerte, Bestwerte
+   7. Diagramme
+   8. Bewegung, breitere Bildschirme
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Basis ───────────────────────────────────────────────── */
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0; padding:0}
+html{background:var(--bg)}           /* auch beim Überscrollen die richtige Farbe */
+body{
+  background:var(--bg); color:var(--text);
+  font:400 var(--fs-body)/24px var(--font-ui);
+  padding-bottom:calc(var(--tab-h) + var(--tab-safe) + var(--s3));
+  overscroll-behavior-y:none;          /* kein Gummiband-Scrollen der Seite */
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  min-height:100vh;
+  overflow-x:hidden;                   /* Netz, kein Ersatz: die Ursache findet tools/overflow.js */
+}
+button,input,select,textarea{font:inherit; color:inherit}
+button{cursor:pointer; background:none; border:0; padding:0; text-align:inherit}
+svg{display:block}
+a{color:var(--accent); text-underline-offset:2px}
+b,strong{font-weight:600}
+.hidden{display:none !important}
+.muted{color:var(--muted); font-weight:400}
+.grow{flex:1; min-width:0}
+
+/* Kennzahlen: feste Ziffernbreite, sonst zappeln die Werte beim Hochzählen */
+.num{font-family:var(--font-num); font-weight:var(--w-num); font-variant-numeric:tabular-nums}
+.num small{font:500 13px/1 var(--font-ui); color:var(--muted); margin-left:3px; letter-spacing:0}
+/* Labels: klein, normale Schreibweise, gedämpft */
+.lbl,.sec-h{font:600 var(--fs-label)/16px var(--font-ui); letter-spacing:var(--track-label); color:var(--muted)}
+
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
+button:focus:not(:focus-visible){outline:none}
+
+/* Zustände: Rot niedrig, Sand mittel, Grün hoch, neutral für „normal" */
+.st-good{color:var(--st-high)} .st-ok{color:var(--text-2)} .st-warn{color:var(--st-mid)} .st-bad{color:var(--st-low)} .st-off{color:var(--muted)}
+
+/* ── 2. Kopfleiste, untere Leiste ───────────────────────────── */
+.topbar{
+  display:flex; align-items:center; gap:var(--s-half);
+  padding:calc(env(safe-area-inset-top) + var(--s2)) var(--s1) var(--s1) var(--pad);
+}
+.topbar h1{margin:0; font:600 24px/32px var(--font-ui); letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.top-sub{font-size:12px; line-height:16px; color:var(--muted); min-height:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.icon-btn{
+  width:44px; height:44px; border-radius:var(--r-pill); display:grid; place-items:center; flex:none;
+  color:var(--text-2); transition:background var(--t-fast), color var(--t-fast);
+}
+.icon-btn svg{width:22px; height:22px}
+.icon-btn:active{background:var(--surface-2); color:var(--text)}
+
+main{padding:0 var(--pad)}
+
+.tabbar{
+  position:fixed; z-index:10; left:0; right:0; bottom:0;
+  height:calc(var(--tab-h) + var(--tab-safe)); padding-bottom:var(--tab-safe);
+  display:grid; grid-template-columns:repeat(var(--tabs),1fr); align-items:stretch;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+}
+.tabbar button{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s-half);
+  min-height:44px; color:var(--muted); font:600 11px/16px var(--font-ui); letter-spacing:.02em;
+  transition:color var(--t-fast);
+}
+.tabbar button svg{width:24px; height:24px}
+.tabbar button.on{color:var(--accent)}
+
+/* ── 3. Karten, Abschnitte, Zeilen ──────────────────────────── */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); padding:var(--pad)}
+.card + .card{margin-top:var(--s1)}
+button.card{display:block; width:100%; text-align:left; transition:background var(--t-fast)}
+button.card:active{background:var(--surface-2)}
+.sec-h{display:flex; align-items:center; gap:var(--s1); min-height:24px; margin:var(--s3) 0 var(--s1)}
+.sec-h:first-child{margin-top:var(--s1)}
+.note{color:var(--text-2); font-size:var(--fs-small); line-height:20px; margin:var(--s1) 0 0}
+
+.rows{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); overflow:hidden}
+.row{display:flex; align-items:center; gap:12px; min-height:56px; padding:var(--s1) var(--pad); width:100%; text-align:left; border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .grow > *{display:block}
+.row .t{font-weight:500; line-height:20px}
+.row .sub{color:var(--muted); font-size:12px; line-height:16px; margin-top:2px}
+.row .end{text-align:right; flex:none; white-space:nowrap}
+button.row{transition:background var(--t-fast)}
+button.row:active{background:var(--surface-2)}
+svg.chev{width:16px; height:16px; color:var(--muted); flex:none}
+
+/* ── 4. Knöpfe, Pills, Chips, Segmente, Schalter, Formulare ─── */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s1);
+  min-height:48px; padding:0 var(--s3); border-radius:var(--r-pill);
+  background:var(--surface-2); color:var(--text); font-weight:600; line-height:20px; text-align:center;
+  border:1px solid var(--line); transition:background var(--t-fast), transform var(--t-fast);
+}
+.btn:active{transform:scale(.98); background:var(--surface-3)}
+.btn svg{width:20px; height:20px; flex:none}
+.btn-primary{background:var(--accent); color:var(--on-accent); border-color:transparent}
+.btn-danger{background:var(--st-low); color:var(--on-accent); border-color:transparent}
+.btn-block{display:flex; width:100%}
+.btn-block + .btn-block{margin-top:var(--s1)}
+.btn-sm{min-height:44px; padding:0 var(--s2); font-size:var(--fs-small)}
+.btn-row{display:flex; gap:var(--s1); flex-wrap:wrap}
+.btn-row > .btn{flex:1; padding:0 var(--s2); white-space:nowrap}
+.btn[disabled]{opacity:.45; pointer-events:none}
+.link{color:var(--accent); font-weight:600; min-height:44px; padding:0 var(--s-half)}
+.link.strong{font-weight:700}
+
+/* Pill: Veränderung (Pfeil und Zahl) oder ein kurzes Urteil */
+.pill{
+  display:inline-flex; align-items:center; gap:2px; height:24px; padding:0 10px; border-radius:var(--r-pill); flex:none;
+  font:600 12px/1 var(--font-ui); font-variant-numeric:tabular-nums; white-space:nowrap;
+  background:var(--st-off-soft); color:var(--text-2);
+}
+.pill svg{width:12px; height:12px; flex:none}
+.pill.st-good{background:var(--st-high-soft); color:var(--st-high)}
+.pill.st-warn{background:var(--st-mid-soft); color:var(--st-mid)}
+.pill.st-bad{background:var(--st-low-soft); color:var(--st-low)}
+
+/* Chips: Leiste, die in sich seitlich scrollt, die Seite nie */
+.chips{display:flex; gap:var(--s1); overflow-x:auto; scrollbar-width:none; margin:0 calc(-1 * var(--pad)); padding:var(--s-half) var(--pad) var(--s2)}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  position:relative; flex:none; height:36px; padding:0 14px; border-radius:var(--r-pill); display:inline-flex; align-items:center; gap:6px;
+  border:1px solid var(--line-2); color:var(--text-2); font-size:var(--fs-small); font-weight:600; white-space:nowrap;
+  transition:background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.chip::after{content:""; position:absolute; inset:-4px 0}   /* Trefferfläche auf 44 px */
+.chip.on{background:var(--accent-soft); border-color:var(--accent-line); color:var(--accent)}
+
+/* Segmented Control: Mulde als Pill, das aktive Segment hebt sich ab */
+.seg{display:flex; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-pill); padding:3px; gap:2px; margin:0 0 var(--s2)}
+.seg button{
+  flex:1; min-width:0; min-height:36px; border-radius:var(--r-pill); padding:0 var(--s1); text-align:center;
+  font-size:var(--fs-small); font-weight:600; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:background var(--t-fast), color var(--t-fast);
+}
+.seg button.on{background:var(--raised); color:var(--text)}
+.seg button{position:relative}
+.seg button::after{content:""; position:absolute; inset:-4px 0}   /* Trefferfläche auf 44 px, wie beim Chip */
+
+.switch{flex:none; width:48px; height:28px; border-radius:var(--r-pill); background:var(--line-2); position:relative; transition:background var(--t-fast)}
+.switch::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:var(--knob); transition:transform var(--t-mid) var(--ease-out)}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+
+/* Formulare. Um Knopfgruppen .lbl statt label (Regel 13). */
+label,.sheet .lbl{display:block; margin-bottom:var(--s2)}
+label{font:600 var(--fs-label)/16px var(--font-ui); letter-spacing:var(--track-label); color:var(--muted)}
+label > input, label > select{margin-top:var(--s1)}
+input[type="text"],input[type="number"],input[type="time"],input[type="date"],input:not([type]),select{
+  display:block; width:100%; min-height:48px; padding:12px 14px; border-radius:var(--r-sm);
+  background:var(--surface); border:1px solid var(--line-2); color:var(--text);
+  font:400 16px/24px var(--font-ui); letter-spacing:0; text-transform:none;   /* 16 px: sonst zoomt iOS beim Antippen */
+}
+input::placeholder{color:var(--muted)}
+input:focus,select:focus{outline:none; border-color:var(--accent)}
+
+/* ── 5. Sheet, Toast, Hinweise, leerer Zustand, Eingabe-Karte ── */
+.scrim{position:fixed; inset:0; z-index:39; background:var(--scrim); animation:fade var(--t-mid) var(--ease-out)}
+.sheet{
+  position:fixed; z-index:40; left:0; right:0; bottom:0; max-height:92vh; max-height:92dvh;
+  display:flex; flex-direction:column;
+  background:var(--bg); border-radius:var(--r-sheet) var(--r-sheet) 0 0;
+  border-top:1px solid var(--line-2); padding-bottom:env(safe-area-inset-bottom, 0px);
+  animation:rise var(--t-mid) var(--ease-out);
+}
+.sheet-grip{width:36px; height:4px; border-radius:2px; background:var(--line-2); margin:var(--s1) auto 0; flex:none}
+.sheet-head{display:flex; align-items:center; gap:var(--s1); padding:0 var(--s1); border-bottom:1px solid var(--line); flex:none; min-height:52px}
+.sheet-head strong{flex:1; text-align:center; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sheet-head .link{min-width:88px; font-weight:500}
+.sheet-head .link:first-child{text-align:left}
+.sheet-head .link:last-child{text-align:right}
+.sheet-body{overflow-y:auto; padding:var(--s2) var(--pad) var(--s4); overscroll-behavior:contain}
+.dlg-t{margin:0 0 var(--s3); color:var(--text-2); line-height:24px; white-space:pre-line}
+@keyframes rise{from{transform:translateY(32px); opacity:0}}
+@keyframes fade{from{opacity:0}}
+
+.toast{
+  position:fixed; z-index:60; left:50%; transform:translateX(-50%);
+  bottom:calc(var(--tab-h) + var(--tab-safe) + var(--s2));
+  width:max-content; max-width:calc(100% - 32px); padding:12px 20px; border-radius:var(--r-pill); text-align:center;
+  background:var(--text); color:var(--bg); font-size:14px; font-weight:600; line-height:20px;
+  animation:fade var(--t-mid) var(--ease-out);
+}
+.spinner{width:18px; height:18px; border-radius:50%; border:2px solid currentColor; border-right-color:transparent; animation:spin .8s linear infinite; display:inline-block; vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hint{display:flex; gap:12px; align-items:flex-start; padding:12px var(--pad); margin-top:var(--s1);
+  background:var(--accent-soft); border-radius:var(--r-card); font-size:var(--fs-small); line-height:20px}
+.hint > svg{width:20px; height:20px; color:var(--accent); flex:none}
+.hint.warn{background:var(--st-mid-soft)} .hint.warn > svg{color:var(--st-mid)}
+.hint.err{background:var(--st-low-soft)}  .hint.err > svg{color:var(--st-low)}
+
+.empty{text-align:center; padding:var(--s5) var(--s2) var(--s3); color:var(--text-2)}
+.empty h2{margin:0 0 var(--s1); color:var(--text); font-size:20px; line-height:28px; font-weight:600}
+.empty p{margin:0 auto var(--s3); max-width:360px; font-size:var(--fs-small); line-height:20px}
+
+/* ── 6. Timer, Zeitenliste, Kennwerte, Bestwerte ────────────── */
+/* Timer füllt den Bildschirm zwischen Kopf und unterer Leiste: die ganze
+   Fläche ist der Taster, man trifft ihn ohne hinzusehen. */
+#view-timer{display:flex; flex-direction:column;
+  min-height:calc(100vh - 88px - var(--tab-h) - var(--tab-safe) - var(--s3));
+  min-height:calc(100dvh - 88px - var(--tab-h) - var(--tab-safe) - var(--s3))}
+.scr{display:flex; align-items:flex-start; gap:var(--s1); margin:0 0 var(--s1)}
+.scr-t{flex:1; min-width:0; margin:0; padding-top:10px; font:500 17px/26px var(--font-num); color:var(--text); word-spacing:.1em; overflow-wrap:anywhere}
+.scr-t.p444{font-size:14px; line-height:22px}
+.scr-t.in-sheet{padding:0; margin:0 0 var(--s2)}
+.scr .icon-btn{margin-right:calc(-1 * var(--s1))}
+
+.pad{flex:1; display:flex; flex-direction:column; justify-content:center; gap:var(--s2);
+  touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; cursor:pointer;
+  padding:var(--s2) 0}
+/* Das Merkmal: die Zeit in einem eingelassenen LCD-Feld, blasse 8er dahinter.
+   Ohne Übergang: Halten und Bereit müssen sofort sichtbar sein. */
+.lcd{position:relative; display:grid; place-items:center; padding:var(--s3) var(--s1);
+  background:var(--lcd); border:1px solid var(--lcd-line); border-radius:var(--r-card);
+  box-shadow:inset 0 2px 0 color-mix(in srgb, var(--lcd-ink) 4%, transparent)}
+/* Komma schmaler als eine volle Ziffernzelle, in beiden Schichten gleich */
+.lcd i,.solve-big i{font-style:normal; margin:0 -.16em}
+.lcd > span{grid-area:1/1; font:500 var(--fs-time)/1 var(--font-num); font-variant-numeric:tabular-nums; letter-spacing:-.04em; white-space:nowrap}
+.lcd-t{color:var(--lcd-ink)}
+.lcd-ghost{color:var(--lcd-ghost)}
+.lcd.st-hold{border-color:var(--st-low)} .lcd.st-hold .lcd-t{color:var(--st-low)}
+.lcd.st-ready{border-color:var(--st-high)} .lcd.st-ready .lcd-t{color:var(--st-high)}
+.pad-hint{text-align:center; min-height:24px; color:var(--muted); font-weight:500}
+.pad-hint.pb{color:var(--accent); font-weight:600}
+.lcd.st-hold + .pad-hint{color:var(--st-low)}
+.lcd.st-ready + .pad-hint{color:var(--st-high); font-weight:700}
+
+.tstats{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:var(--s1); padding-top:var(--s2); border-top:1px solid var(--line)}
+.tstats > div{display:flex; flex-direction:column; min-width:0}
+.tstats .num{font-size:17px; line-height:24px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tstats.in-sheet{grid-template-columns:repeat(2, minmax(0,1fr)); margin:0 0 var(--s3); border-top:0; padding-top:0}
+.last-act{display:flex; gap:var(--s1); justify-content:center}
+.last-act .btn{flex:1; max-width:200px}
+
+/* Während des Solves: nur die Zeit. visibility statt display, damit das
+   LCD-Feld beim Start nicht springt. */
+body.running .topbar, body.running .tabbar, body.running .hide-run{visibility:hidden}
+body.running .pad-hint{visibility:hidden}
+
+/* Zeitenliste als Tabelle wie eine Scorecard: Spalten fest, Ziffern bündig */
+.thead,.trow{display:grid; grid-template-columns:40px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) 44px; gap:var(--s1); align-items:center; padding:0 12px}
+.thead{font:600 var(--fs-label)/16px var(--font-ui); color:var(--muted); padding-top:var(--s-half); padding-bottom:var(--s1)}
+.thead span{font:inherit; color:inherit}
+.thead .c-t,.thead .c-a{text-align:right}
+.day-h{display:flex; align-items:baseline; gap:var(--s1); margin:var(--s2) 0 var(--s1); font-weight:600; font-size:var(--fs-small)}
+.day-h .num{font-size:var(--fs-small); color:var(--text-2)}
+.trows{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card); overflow:hidden}
+.trow{width:100%; min-height:44px; border-bottom:1px solid var(--line); transition:background var(--t-fast)}
+.trow:last-child{border-bottom:0}
+.trow:active{background:var(--surface-2)}
+.c-n{color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums}
+.c-t,.c-a{text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.c-t{font-size:16px; color:var(--text)}
+.c-a{font-size:var(--fs-small); color:var(--text-2)}
+.c-h{text-align:right; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums}
+.c-note{grid-column:2 / -1; color:var(--muted); font-size:12px; line-height:16px; padding-bottom:var(--s1); margin-top:-6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pb-tag{font:700 10px/14px var(--font-ui); font-style:normal; color:var(--accent); border:1px solid var(--accent-line); border-radius:2px; padding:0 3px; margin-left:6px; vertical-align:2px}
+.more{margin-top:var(--s2)}
+
+.solve-big{font-size:56px; line-height:64px; text-align:center; margin-top:var(--s1); letter-spacing:-.03em}
+.solve-when{text-align:center; margin:0 0 var(--s3)}
+
+.brows .brow{display:flex; align-items:baseline; gap:var(--s2); min-height:44px; padding:10px var(--pad); border-bottom:1px solid var(--line)}
+.brows .brow:last-child{border-bottom:0}
+.brow .num{font-size:17px}
+.b-when{width:52px; text-align:right; font-size:12px; font-variant-numeric:tabular-nums}
+
+.set-note{margin:calc(-1 * var(--s1)) 0 var(--s3)}
+.set-gap{margin-top:var(--s3)}
+.btn-danger-line{color:var(--st-low); border-color:color-mix(in srgb, var(--st-low) 40%, transparent)}
+
+/* Kennwerte in einer Reihe, durch eine Haarlinie abgesetzt */
+.stats{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:var(--s1)}
+.stats > div{display:flex; flex-direction:column; gap:var(--s-half); min-width:0}
+.stats .num{font-size:var(--fs-stat); line-height:24px; white-space:nowrap}
+.stats .lbl{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+/* ── 7. Diagramme ───────────────────────────────────────────── */
+.chart{position:relative; margin:0 -4px}
+.chart svg{width:100%; height:auto; touch-action:pan-y; user-select:none; -webkit-user-select:none}
+.chart-empty{padding:var(--s4) 0; text-align:center; color:var(--muted); font-size:var(--fs-small)}
+.readout{display:flex; align-items:baseline; gap:var(--s1); min-height:24px; margin:0 4px var(--s-half); font-size:12px; line-height:16px; color:var(--muted)}
+.readout b{color:var(--text); font:var(--w-num) 16px/20px var(--font-num); font-variant-numeric:tabular-nums}
+.tr-text{margin:var(--s2) 0 0; padding-top:var(--s2); border-top:1px solid var(--line); line-height:24px; color:var(--text-2)}
+.tr-text b{color:var(--text)}
+
+/* Farbe einer Reihe als --cc am SVG; Linie, Punkte und Fläche lesen sie.
+   Weitere Reihen: .chart-svg.c-xyz{--cc:var(--c-xyz)} mit Token in tokens.css */
+.chart-svg{--cc:var(--accent)}
+.ag0{stop-color:var(--cc); stop-opacity:var(--area-op)}
+.ag1{stop-color:var(--cc); stop-opacity:0}
+.grid{stroke:var(--grid); stroke-width:1; shape-rendering:crispEdges}
+.ax{fill:var(--ax); font:500 10px var(--font-ui); font-variant-numeric:tabular-nums}
+.ax.cur{fill:var(--text); font-weight:600}
+.band{fill:var(--band)}
+.area{stroke:none}
+.ln-main{fill:none; stroke:var(--cc); stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.end-dot{fill:var(--cc); stroke:var(--surface); stroke-width:2}
+.bar{fill:var(--bar)}
+.bar.cur{fill:var(--bar-dim)}      /* laufender Zeitraum: noch nicht fertig, deshalb blass */
+.cursor{stroke:var(--text-2); stroke-width:1}
+
+/* Punktwolke (jeder Solve), zweite Linie (Tagesbestzeit), Tagespunkte */
+.pts{stroke:var(--pt); stroke-width:3.5; stroke-linecap:round; fill:none}
+.pts.big{stroke-width:7}
+.ln-alt{fill:none; stroke:var(--ln-2); stroke-width:1.5; stroke-dasharray:3 3; stroke-linejoin:round}
+.dot{fill:var(--cc); stroke:var(--surface); stroke-width:1}
+.legend{margin-left:auto; display:flex; align-items:center; gap:var(--s-half) var(--s1); font-weight:500; flex-wrap:wrap; justify-content:flex-end}
+.legend i{display:inline-block; width:12px; height:2px; background:var(--accent); margin:0 2px 0 var(--s1); vertical-align:middle}
+.legend i.lg-pt{width:6px; height:6px; border-radius:50%; background:var(--pt)}
+.legend i.lg-alt{background:none; border-top:2px dashed var(--ln-2); height:0}
+
+/* ── 8. Bewegung ────────────────────────────────────────────── */
+/* Nur beim ersten Zeichnen einer Ansicht (Klasse .anim, gesetzt von runAnims) */
+.view.anim .chart-svg .ln-main,.view.anim .chart-svg .area,.view.anim .chart-svg .end-dot,.view.anim .chart-svg .ln-alt,.view.anim .chart-svg .pts,.view.anim .chart-svg .dot{animation:fade var(--t-fill) var(--ease-out) both}
+
+/* ── Breitere Bildschirme ───────────────────────────────────── */
+@media(min-width:560px){
+  main,.topbar{max-width:640px; margin:0 auto}
+  .tabbar{left:50%; right:auto; transform:translateX(-50%); width:100%; max-width:640px; border:1px solid var(--line); border-bottom:0; border-radius:var(--r-card) var(--r-card) 0 0}
+  .sheet{max-width:640px; margin:0 auto}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;
+    animation-iteration-count:1 !important; transition-duration:.01ms !important}
+}
